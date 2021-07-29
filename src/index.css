@@ -1,0 +1,48 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+input[type="checkbox"] {
+  visibility: hidden;
+}
+label {
+  cursor: pointer;
+}
+input[type="checkbox"] + label:before {
+  border: 2px solid #d5d5d5;
+  content: "\00a0";
+  display: inline-block;
+  font: 14px/1em rubik;
+  height: 16px;
+  margin: 0em 0.5em 0em -2em;
+  padding: 0;
+  vertical-align: top;
+  width: 17px;
+}
+input[type="checkbox"]:checked + label:before {
+  background: #7749f8;
+  color: #fff;
+  content: "\2713";
+  text-align: center;
+  border: 2px solid #ffffff;
+  height: 18px;
+  width: 19px;
+  margin: 0em 0.5em 0em -2em;
+}
+input[type="checkbox"]:checked + label:after {
+  font-weight: bold;
+}
+
+input[type="checkbox"]:focus + label::before {
+  outline: rgb(59, 153, 252) auto 5px;
+}
