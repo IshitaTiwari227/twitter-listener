@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react";
 import withStyles from "react-jss";
 import request from "request-promise";
-import {
-  TwitterTimelineEmbed,
-  TwitterShareButton,
-  TwitterFollowButton,
-  TwitterHashtagButton,
-  TwitterMentionButton,
-  TwitterTweetEmbed,
-  TwitterMomentShare,
-  TwitterDMButton,
-  TwitterVideoEmbed,
-  TwitterOnAirButton,
-} from "react-twitter-embed";
+import { TwitterTweetEmbed } from "react-twitter-embed";
 
 const host = "http://localhost:5000";
 
@@ -24,7 +13,10 @@ const styles = {
     flexDirection: "row",
   },
   leftContainer: {
-    width: "30%",
+    position: "fixed",
+    left: "0px",
+    top: "0px",
+    width: "25%",
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
@@ -36,7 +28,8 @@ const styles = {
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
-    width: "70%",
+    marginLeft: "30%",
+    overflow: "auto",
   },
   title: {
     fontStyle: "normal",
@@ -68,10 +61,10 @@ const styles = {
   },
   searchBar: {
     marginTop: "20px",
-    width: "25rem",
+    width: "20em",
     background: "#FFFFFF",
     border: "1px solid #dddddd",
-    padding: "0.7rem",
+    padding: "0.7em",
     color: "#979797",
     fontFamily: "Rubik",
     fontStyle: "normal",
@@ -82,6 +75,9 @@ const styles = {
       width: "19rem",
       fontSize: "12px",
     },
+  },
+  tweet: {
+    padding: "20px",
   },
 };
 
@@ -98,19 +94,28 @@ const MainPage = ({ classes }) => {
   };
 
   let getTweets = async (tag) => {
-    console.log(tag);
+    //console.log(tag);
     const body = tag ? await request.get(`${host}/tweets/${tag}`) : null;
     const result = JSON.parse(body);
     return result;
   };
 
+  const handleImageDisplay = (e) => {
+    if (e.target.checked) {
+      let tweetsWithImage = tweets.filter((tweet) => {
+        return tweet.entities.urls.length !== 0;
+      });
+      setTweets(tweetsWithImage);
+    }
+  };
+
   useEffect(() => {
     getTweets(hashtag).then((data) => {
-      console.log(data);
+      //console.log(data);
       if (data && data.statuses.length > 0) return setTweets(data.statuses);
     });
   }, [hashtag]);
-
+  //console.log("tweets", tweets);
   return (
     <div className={classes.mainContainer}>
       <div className={classes.leftContainer}>
@@ -124,6 +129,7 @@ const MainPage = ({ classes }) => {
         </div>
         <div className={classes.checkbox}>
           <input
+            onChange={(e) => handleImageDisplay(e)}
             type="checkbox"
             id={"include image"}
             value={"include image"}
@@ -140,9 +146,13 @@ const MainPage = ({ classes }) => {
         </div>
       </div>
       <div className={classes.rightContainer}>
-        {tweets && tweets.length > 0
-          ? tweets.map((tweet) => {
-              return <TwitterTweetEmbed tweetId={tweet.id_str} />;
+        {tweets
+          ? tweets.map((tweet, i) => {
+              return (
+                <div key={i} className={classes.tweet}>
+                  <TwitterTweetEmbed tweetId={tweet.id_str} />
+                </div>
+              );
             })
           : null}
       </div>
