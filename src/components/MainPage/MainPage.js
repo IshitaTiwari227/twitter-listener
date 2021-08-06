@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import withStyles from "react-jss";
 import request from "request-promise";
-import { TwitterTweetEmbed } from "react-twitter-embed";
+import TweetEmbed from "react-tweet-embed";
 
 const host = "http://localhost:5000";
-
-//import searchIcon from "../../Assets/searchIcon.png";
 
 const styles = {
   mainContainer: {
@@ -88,6 +86,7 @@ const styles = {
 const MainPage = ({ classes }) => {
   let [hashtag, sethashtag] = useState("");
   let [tweets, setTweets] = useState([]);
+  let [filteredTweets, setfilteredTweets] = useState([]);
   let searchedtag = "";
   let handleInput = (e) => {
     searchedtag = e.target.value;
@@ -108,21 +107,23 @@ const MainPage = ({ classes }) => {
       let tweetsWithImage = tweets.filter((tweet) => {
         return tweet.entities.urls.length !== 0;
       });
-      setTweets(tweetsWithImage);
+      setfilteredTweets(tweetsWithImage);
+    } else if (!e.target.checked) {
+      setfilteredTweets([]);
     }
   };
 
   useEffect(() => {
-    let newTweets = getTweets(hashtag)
+    getTweets(hashtag)
       .then((data) => {
         if (data && data.statuses.length > 0) return data.statuses;
       })
       .then((res) => {
         setTweets(res);
       });
+    setfilteredTweets([]);
   }, [hashtag]);
 
-  console.log("tweets", tweets);
   return (
     <div className={classes.mainContainer}>
       <div className={classes.leftContainer}>
@@ -150,11 +151,19 @@ const MainPage = ({ classes }) => {
         </div>
       </div>
       <div className={classes.rightContainer}>
-        {tweets && tweets.length > 0
+        {filteredTweets && filteredTweets.length > 0
+          ? filteredTweets.map((tweet, i) => {
+              return (
+                <div key={i} className={classes.tweet}>
+                  <TweetEmbed id={tweet.id_str} />
+                </div>
+              );
+            })
+          : tweets && tweets.length > 0
           ? tweets.map((tweet, i) => {
               return (
                 <div key={i} className={classes.tweet}>
-                  <TwitterTweetEmbed tweetId={tweet.id_str} />
+                  <TweetEmbed id={tweet.id_str} />
                 </div>
               );
             })
