@@ -61,7 +61,7 @@ const styles = {
   },
   searchBar: {
     marginTop: "20px",
-    width: "20em",
+    width: "15em",
     background: "#FFFFFF",
     border: "1px solid #dddddd",
     padding: "0.7em",
@@ -71,8 +71,12 @@ const styles = {
     fontWeight: "normal",
     fontSize: "16px",
     height: "48px",
+    "@media only screen and (max-width: 980px) ": {
+      width: "12em",
+      fontSize: "12px",
+    },
     "@media only screen and (max-width: 600px) ": {
-      width: "19rem",
+      width: "8em",
       fontSize: "12px",
     },
   },
@@ -94,7 +98,6 @@ const MainPage = ({ classes }) => {
   };
 
   let getTweets = async (tag) => {
-    //console.log(tag);
     const body = tag ? await request.get(`${host}/tweets/${tag}`) : null;
     const result = JSON.parse(body);
     return result;
@@ -110,22 +113,23 @@ const MainPage = ({ classes }) => {
   };
 
   useEffect(() => {
-    getTweets(hashtag).then((data) => {
-      //console.log(data);
-      if (data && data.statuses.length > 0) return setTweets(data.statuses);
-    });
+    let newTweets = getTweets(hashtag)
+      .then((data) => {
+        if (data && data.statuses.length > 0) return data.statuses;
+      })
+      .then((res) => {
+        setTweets(res);
+      });
   }, [hashtag]);
-  //console.log("tweets", tweets);
+
+  console.log("tweets", tweets);
   return (
     <div className={classes.mainContainer}>
       <div className={classes.leftContainer}>
         <div className={classes.title}>{"Twitter Listener"}</div>
         <div>{"#hashtag"}</div>
         <div onChange={(e) => handleInput(e)}>
-          <input
-            className={classes.searchBar}
-            //value={keyword}
-          />
+          <input className={classes.searchBar} />
         </div>
         <div className={classes.checkbox}>
           <input
@@ -146,7 +150,7 @@ const MainPage = ({ classes }) => {
         </div>
       </div>
       <div className={classes.rightContainer}>
-        {tweets
+        {tweets && tweets.length > 0
           ? tweets.map((tweet, i) => {
               return (
                 <div key={i} className={classes.tweet}>
